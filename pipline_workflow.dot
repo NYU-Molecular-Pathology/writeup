@@ -48,7 +48,7 @@ BWA_MEM [
 Sambamba [
     label=<<FONT POINT-SIZE="18">Sambamba</FONT><BR />
     <FONT POINT-SIZE="12">
-    filter poorly mapped reads<BR />
+    filter poorly mapped and duplicated reads<BR />
     &#8226; input: .bam<BR />
     &#8226; output: .bam
     </FONT>>,
@@ -90,6 +90,7 @@ Rsamtools [
     label=<<FONT POINT-SIZE="18">Rsamtools</FONT><BR />
     <FONT POINT-SIZE="12">
     calculate and visualize fragment sizes<BR />
+    (custom scripts)<BR />
     &#8226; input: .bam<BR />
     &#8226; output: .pdf
     </FONT>>,
@@ -160,28 +161,38 @@ QC [
 
 Review [
     label=<<FONT POINT-SIZE="14">Clinical Review</FONT>>,
-    style=rounded, shape=box, color=Black
+    style=rounded, shape=box, color=Purple
     ]
 
 // layout
-    subgraph cluster1 {
-        style="invis"
-        Trimmomatic -> BWA_MEM -> Sambamba -> Rsamtools -> GATK_DepthOfCoverage
+subgraph cluster1 {
+    style="invis"
+    Trimmomatic -> BWA_MEM -> Sambamba
+    Sambamba -> Rsamtools
+    Sambamba -> GATK_DepthOfCoverage
     }
 
-    subgraph cluster2 {
-        style="invis"
-         GATK_Realign -> GATK_Recalibrate
-         GATK_Recalibrate -> LoFreq -> ANNOVAR
-         GATK_Recalibrate -> GATK_HaplotypeCaller -> ANNOVAR
-         GATK_Recalibrate -> GATK_MuTect2 -> ANNOVAR
+subgraph cluster2 {
+    style="invis"
+     GATK_Realign -> GATK_Recalibrate
+     GATK_Recalibrate -> LoFreq -> ANNOVAR
+     GATK_Recalibrate -> GATK_HaplotypeCaller -> ANNOVAR
+     GATK_Recalibrate -> GATK_MuTect2 -> ANNOVAR
     }
 
-    splines="ortho"
-    {rank=same Trimmomatic GATK_Realign}
-    GATK_DepthOfCoverage -> GATK_Realign [constraint=false]
-    ANNOVAR -> Reporting
+splines="ortho"
 
-    Reporting -> QC
-    Reporting -> Review
+{rank=same Trimmomatic GATK_Realign}
+
+Sambamba -> GATK_Realign //[constraint=false]
+ANNOVAR -> Reporting
+
+Rsamtools -> Reporting
+GATK_DepthOfCoverage -> Reporting
+{rank=same QC Review}
+
+Reporting -> QC
+Reporting -> Review
+QC -> Review
+
 }
