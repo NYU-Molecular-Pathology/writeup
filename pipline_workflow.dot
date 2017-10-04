@@ -9,6 +9,7 @@ node [fontname = "helvetica"];
 edge [fontname = "helvetica"];
 
 // define all the nodes in the order of appearance
+Start
 Trimmomatic
 BWA_MEM
 Sambamba
@@ -26,6 +27,15 @@ QC
 Review
 
 // add styles and labels to the pipeline steps
+Start [
+    label=<<FONT POINT-SIZE="14">
+    Demultiplexed sequencing<BR />
+    reads from NextSeq<BR />
+    &#8226; output: .fastq
+    </FONT>>,
+    style=rounded, shape=box, color=Black
+    ]
+
 // pre-processing pipeline steps
 Trimmomatic [
     label=<<FONT POINT-SIZE="18">Trimmomatic</FONT><BR />
@@ -198,7 +208,8 @@ subgraph cluster2 {
 
 splines="ortho"
 
-{rank=same Trimmomatic GATK_Realign}
+{rank=same Start Trimmomatic GATK_Realign}
+Start -> Trimmomatic
 
 Sambamba -> CNV
 CNV -> Reporting
