@@ -1,0 +1,111 @@
+digraph sns_pipeline {
+// overall graph label 
+label="NGS580 Data Analysis Pipeline\n\n"
+labelloc="t";
+
+
+
+// define all the nodes in the order of appearance
+Trimmomatic 
+BWA_MEM 
+Sambamba
+Rsamtools
+GATK_DepthOfCoverage
+GATK_Realign
+GATK_Recalibrate
+LoFreq
+GATK_HaplotypeCaller
+GATK_MuTect2
+ANNOVAR
+Reporting
+email
+
+// add styles and labels to the pipeline steps
+
+// quality control pipeline steps - 
+Rsamtools [
+    label=<<FONT POINT-SIZE="16">Rsamtools</FONT><BR /><FONT POINT-SIZE="12">calculate and visualize fragment sizes</FONT>>,
+    style=rounded, shape=box, color=Orange
+    ]
+
+GATK_DepthOfCoverage [
+    label=<<FONT POINT-SIZE="16">GATK<BR />DepthOfCoverage</FONT><BR /><FONT POINT-SIZE="12">evaluate coverage at target regions</FONT>>,
+    style=rounded, shape=box, color=Orange
+    ]
+
+// pre-processing pipeline steps
+Trimmomatic [
+    label=<<FONT POINT-SIZE="16">Trimmomatic</FONT><BR /><FONT POINT-SIZE="12">trim low quality reads</FONT>>,
+    style=rounded, shape=box, color=Blue
+    ]
+
+BWA_MEM [
+    label=<<FONT POINT-SIZE="16">BWA MEM</FONT><BR /><FONT POINT-SIZE="12">align reads</FONT>>,
+    style=rounded, shape=box, color=Blue
+    ]
+
+Sambamba [
+    label=<<FONT POINT-SIZE="16">Sambamba</FONT><BR /><FONT POINT-SIZE="12">filter poorly mapped reads</FONT>>,
+    style=rounded, shape=box, color=Blue
+    ]
+
+GATK_Realign [
+    label=<<FONT POINT-SIZE="16">GATK<BR />RealignerTargetCreator<BR />IndelRealigner<BR />BaseRecalibrator</FONT><BR /><FONT POINT-SIZE="12">recalibrate and realign reads</FONT>>,
+    style=rounded, shape=box, color=Blue
+    ]
+
+GATK_Recalibrate [
+    label=<<FONT POINT-SIZE="16">GATK<BR />AnalyzeCovariates<BR />PrintReads<BR />BaseRecalibrator</FONT><BR /><FONT POINT-SIZE="12">visualize and save recalibration results</FONT>>,
+    style=rounded, shape=box, color=Blue
+    ]
+
+// Variant Calling pipeline steps
+LoFreq [
+    label=<<FONT POINT-SIZE="16">LoFreq</FONT><BR /><FONT POINT-SIZE="12">high sensitivity variant calling</FONT>>,
+    style=rounded, shape=box, color=Green
+    ]
+
+GATK_HaplotypeCaller [
+    label=<<FONT POINT-SIZE="16">GATK<BR />HaplotypeCaller</FONT><BR /><FONT POINT-SIZE="12">variant calling</FONT>>,
+    style=rounded, shape=box, color=Green
+    ]
+
+GATK_MuTect2 [
+    label=<<FONT POINT-SIZE="16">GATK<BR />MuTect2</FONT><BR /><FONT POINT-SIZE="12">tumor-normal variant calling</FONT>>,
+    style=rounded, shape=box, color=Green]
+
+ANNOVAR [
+    label=<<FONT POINT-SIZE="16">ANNOVAR</FONT><BR /><FONT POINT-SIZE="12">Variant annotation</FONT>>,
+    style=rounded, shape=box, color=Green
+    ]
+
+// custom downstream steps
+node []
+Reporting [
+    style=rounded, shape=box, color=Black
+    ]
+    
+email [
+    label="Email output",
+    style=rounded, shape=box, color=Black
+    ]
+
+// layout
+    subgraph cluster1 {
+        style="invis"
+        Trimmomatic -> BWA_MEM -> Sambamba -> Rsamtools -> GATK_DepthOfCoverage
+    }
+
+    subgraph cluster2 {
+        style="invis"
+         GATK_Realign -> GATK_Recalibrate
+         GATK_Recalibrate -> LoFreq -> ANNOVAR
+         GATK_Recalibrate -> GATK_HaplotypeCaller -> ANNOVAR
+         GATK_Recalibrate -> GATK_MuTect2 -> ANNOVAR
+    }
+    
+    splines="ortho"
+    {rank=same Trimmomatic GATK_Realign}
+    GATK_DepthOfCoverage -> GATK_Realign [constraint=false]
+    ANNOVAR -> Reporting -> email
+}

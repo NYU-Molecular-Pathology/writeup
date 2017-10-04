@@ -1,0 +1,17 @@
+digraph G {
+    node [style=rounded, shape=box]
+    label="NGS580 Sequencing Data workflow\n\n"
+    labelloc="t";
+    splines="ortho"
+    // steps in data processing
+    NextSeq [label="NextSeq data"]
+    email [label="email output"]
+
+    subgraph cluster1 {
+        label="phoenix computer cluster";
+        analysis -> reporting -> results;
+    }
+
+    NextSeq -> analysis [constraint=false]
+    results -> email;
+}
