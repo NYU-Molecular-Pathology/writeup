@@ -1,6 +1,7 @@
 digraph sns_pipeline {
 // overall graph label
-label="NGS580 Data Analysis Pipeline\n\n"
+// label="NGS580 Data Analysis Pipeline\n\n"
+label=<<FONT POINT-SIZE="20">NGS580 Data Analysis Pipeline</FONT><BR /><BR />>
 labelloc="t";
 
 graph [fontname = "helvetica"];
@@ -15,6 +16,7 @@ Rsamtools
 GATK_DepthOfCoverage
 GATK_Realign
 GATK_Recalibrate
+CNV
 LoFreq
 GATK_HaplotypeCaller
 GATK_MuTect2
@@ -28,7 +30,7 @@ Review
 Trimmomatic [
     label=<<FONT POINT-SIZE="18">Trimmomatic</FONT><BR />
     <FONT POINT-SIZE="12">
-    trim low quality reads<BR />
+    trim low quality sequence reads<BR />
     &#8226; input: .fastq<BR />
     &#8226; output: .fastq
     </FONT>>,
@@ -98,9 +100,12 @@ Rsamtools [
     ]
 
 GATK_DepthOfCoverage [
-    label=<<FONT POINT-SIZE="18">GATK<BR />DepthOfCoverage</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK<BR /></FONT>
+    <FONT POINT-SIZE="16">
+    DepthOfCoverage
+    </FONT>
     <FONT POINT-SIZE="12">
-    evaluate coverage at target regions<BR />
+    <BR />evaluate coverage at target regions<BR />
     &#8226; input: .bam<BR />
     &#8226; output: .txt
     </FONT>>,
@@ -108,7 +113,7 @@ GATK_DepthOfCoverage [
     ]
 
 
-// Variant Calling pipeline steps
+// Variant Calling & analysis steps
 LoFreq [
     label=<<FONT POINT-SIZE="18">LoFreq</FONT><BR />
     <FONT POINT-SIZE="12">
@@ -136,7 +141,18 @@ GATK_MuTect2 [
     &#8226; input: .bam, .bed<BR />
     &#8226; output: .vcf
     </FONT>>,
-    style=rounded, shape=box, color=Green]
+    style=rounded, shape=box, color=Green
+    ]
+
+CNV [
+    label=<<FONT POINT-SIZE="18">CNVKit</FONT><BR />
+    <FONT POINT-SIZE="12">
+    copy number variant analysis<BR />
+    &#8226; input: .bam<BR />
+    &#8226; output: .txt, .pdf
+    </FONT>>,
+    style=rounded, shape=box, color=Green
+]
 
 ANNOVAR [
     label=<<FONT POINT-SIZE="18">ANNOVAR</FONT><BR />
@@ -183,6 +199,9 @@ subgraph cluster2 {
 splines="ortho"
 
 {rank=same Trimmomatic GATK_Realign}
+
+Sambamba -> CNV
+CNV -> Reporting
 
 Sambamba -> GATK_Realign //[constraint=false]
 ANNOVAR -> Reporting
