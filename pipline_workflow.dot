@@ -3,7 +3,9 @@ digraph sns_pipeline {
 label="NGS580 Data Analysis Pipeline\n\n"
 labelloc="t";
 
-
+graph [fontname = "helvetica"];
+node [fontname = "helvetica"];
+edge [fontname = "helvetica"];
 
 // define all the nodes in the order of appearance
 Trimmomatic
@@ -18,14 +20,13 @@ GATK_HaplotypeCaller
 GATK_MuTect2
 ANNOVAR
 Reporting
-
+QC
+Review
 
 // add styles and labels to the pipeline steps
-
-
 // pre-processing pipeline steps
 Trimmomatic [
-    label=<<FONT POINT-SIZE="16">Trimmomatic</FONT><BR />
+    label=<<FONT POINT-SIZE="18">Trimmomatic</FONT><BR />
     <FONT POINT-SIZE="12">
     trim low quality reads<BR />
     &#8226; input: .fastq<BR />
@@ -35,7 +36,7 @@ Trimmomatic [
     ]
 
 BWA_MEM [
-    label=<<FONT POINT-SIZE="16">BWA MEM</FONT><BR />
+    label=<<FONT POINT-SIZE="18">BWA MEM</FONT><BR />
     <FONT POINT-SIZE="12">
     align reads<BR />
     &#8226; input: .fastq<BR />
@@ -45,7 +46,7 @@ BWA_MEM [
     ]
 
 Sambamba [
-    label=<<FONT POINT-SIZE="16">Sambamba</FONT><BR />
+    label=<<FONT POINT-SIZE="18">Sambamba</FONT><BR />
     <FONT POINT-SIZE="12">
     filter poorly mapped reads<BR />
     &#8226; input: .bam<BR />
@@ -55,7 +56,12 @@ Sambamba [
     ]
 
 GATK_Realign [
-    label=<<FONT POINT-SIZE="16">GATK<BR />RealignerTargetCreator<BR />IndelRealigner<BR />BaseRecalibrator</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK</FONT><BR />
+    <FONT POINT-SIZE="16">
+    RealignerTargetCreator<BR />
+    IndelRealigner<BR />
+    BaseRecalibrator<BR />
+    </FONT>
     <FONT POINT-SIZE="12">
     recalibrate and realign reads<BR />
     &#8226; input: .bam<BR />
@@ -65,18 +71,23 @@ GATK_Realign [
     ]
 
 GATK_Recalibrate [
-    label=<<FONT POINT-SIZE="16">GATK<BR />AnalyzeCovariates<BR />PrintReads<BR />BaseRecalibrator</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK</FONT><BR />
+    <FONT POINT-SIZE="16">
+    AnalyzeCovariates<BR />
+    PrintReads<BR />
+    BaseRecalibrator<BR />
+    </FONT>
     <FONT POINT-SIZE="12">
     visualize and save recalibration results<BR />
     &#8226; input: .bam<BR />
-    &#8226; output: .bam
+    &#8226; output: .bam, .txt, .pdf
     </FONT>>,
     style=rounded, shape=box, color=Blue
     ]
 
 // quality control pipeline steps -
 Rsamtools [
-    label=<<FONT POINT-SIZE="16">Rsamtools</FONT><BR />
+    label=<<FONT POINT-SIZE="18">Rsamtools</FONT><BR />
     <FONT POINT-SIZE="12">
     calculate and visualize fragment sizes<BR />
     &#8226; input: .bam<BR />
@@ -86,7 +97,7 @@ Rsamtools [
     ]
 
 GATK_DepthOfCoverage [
-    label=<<FONT POINT-SIZE="16">GATK<BR />DepthOfCoverage</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK<BR />DepthOfCoverage</FONT><BR />
     <FONT POINT-SIZE="12">
     evaluate coverage at target regions<BR />
     &#8226; input: .bam<BR />
@@ -98,7 +109,7 @@ GATK_DepthOfCoverage [
 
 // Variant Calling pipeline steps
 LoFreq [
-    label=<<FONT POINT-SIZE="16">LoFreq</FONT><BR />
+    label=<<FONT POINT-SIZE="18">LoFreq</FONT><BR />
     <FONT POINT-SIZE="12">
     high sensitivity variant calling<BR />
     &#8226; input: .bam, .bed<BR />
@@ -108,7 +119,7 @@ LoFreq [
     ]
 
 GATK_HaplotypeCaller [
-    label=<<FONT POINT-SIZE="16">GATK<BR />HaplotypeCaller</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK<BR />HaplotypeCaller</FONT><BR />
     <FONT POINT-SIZE="12">
     variant calling<BR />
     &#8226; input: .bam, .bed<BR />
@@ -118,7 +129,7 @@ GATK_HaplotypeCaller [
     ]
 
 GATK_MuTect2 [
-    label=<<FONT POINT-SIZE="16">GATK<BR />MuTect2</FONT><BR />
+    label=<<FONT POINT-SIZE="18">GATK<BR />MuTect2</FONT><BR />
     <FONT POINT-SIZE="12">
     tumor-normal variant calling<BR />
     &#8226; input: .bam, .bed<BR />
@@ -127,7 +138,7 @@ GATK_MuTect2 [
     style=rounded, shape=box, color=Green]
 
 ANNOVAR [
-    label=<<FONT POINT-SIZE="16">ANNOVAR</FONT><BR />
+    label=<<FONT POINT-SIZE="18">ANNOVAR</FONT><BR />
     <FONT POINT-SIZE="12">
     Variant annotation<BR />
     &#8226; input: .vcf<BR />
@@ -137,8 +148,18 @@ ANNOVAR [
     ]
 
 // custom downstream steps
-node []
 Reporting [
+    label=<<FONT POINT-SIZE="14">Custom Report Generation</FONT>>,
+    style=rounded, shape=box, color=Black
+    ]
+
+QC [
+    label=<<FONT POINT-SIZE="14">QC Check and email output</FONT>>,
+    style=rounded, shape=box, color=Black
+    ]
+
+Review [
+    label=<<FONT POINT-SIZE="14">Clinical Review</FONT>>,
     style=rounded, shape=box, color=Black
     ]
 
@@ -160,4 +181,7 @@ Reporting [
     {rank=same Trimmomatic GATK_Realign}
     GATK_DepthOfCoverage -> GATK_Realign [constraint=false]
     ANNOVAR -> Reporting
+
+    Reporting -> QC
+    Reporting -> Review
 }
