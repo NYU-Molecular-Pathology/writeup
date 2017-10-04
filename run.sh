@@ -22,4 +22,8 @@
 # dot test.dot  -Tpng -o test.png
 # dot placement.dot -Tpng -o placement3.png && open placement3.png
 
-dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && firefox pipline_workflow.pdf & 
+# use this command on the server
+# dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && firefox pipline_workflow.pdf & 
+
+# use this command on local desktop
+dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && open pipline_workflow.pdf &
