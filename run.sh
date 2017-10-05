@@ -27,3 +27,4 @@
 
 # use this command on local desktop
 dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && open pipline_workflow.pdf &
+dot pipline_workflow.dot -Tpng -o pipline_workflow.png
