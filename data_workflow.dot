@@ -1,17 +1,41 @@
-digraph G {
+digraph data_workflow {
     node [style=rounded, shape=box]
     label="NGS580 Sequencing Data workflow\n\n"
     labelloc="t";
     splines="ortho"
+
+    graph [fontname = "helvetica"];
+    node [fontname = "helvetica"];
+    edge [fontname = "helvetica"];
+
     // steps in data processing
-    NextSeq [label="NextSeq data"]
-    email [label="email output"]
+    NextSeq [
+        label=<
+        NextSeq<BR />
+        sequencing read data
+        >
+        ]
+    Demultiplexing
+    Analysis
+    Reporting
+    Email [label="Email output"]
+    Review [
+        label=<
+        Clinical Review
+        >,
+        style=rounded, shape=box, color=Purple
+        ]
+
 
     subgraph cluster1 {
-        label="phoenix computer cluster";
-        analysis -> reporting -> results;
+        label=<
+        NYU phoenix<BR />
+        compute cluster
+        >
+
+        Demultiplexing -> Analysis -> Reporting
     }
 
-    NextSeq -> analysis [constraint=false]
-    results -> email;
+    NextSeq -> Demultiplexing [constraint=false]
+    Reporting -> Email -> Review
 }

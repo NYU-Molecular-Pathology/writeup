@@ -14,7 +14,7 @@
 # cd graphviz-2.40.1
 # ./configure
 # make
-# couldnt get it to work oh well 
+# couldnt get it to work oh well
 
 
 # dot pipline_workflow.dot  -T"$filetype" -o pipline_workflow."$filetype" && open pipline_workflow."$filetype"
@@ -23,8 +23,12 @@
 # dot placement.dot -Tpng -o placement3.png && open placement3.png
 
 # use this command on the server
-# dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && firefox pipline_workflow.pdf & 
+# dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && firefox pipline_workflow.pdf &
 
 # use this command on local desktop
-dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf && open pipline_workflow.pdf &
+dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf # && open pipline_workflow.pdf &
 dot pipline_workflow.dot -Tpng -o pipline_workflow.png
+
+
+dot data_workflow.dot -Tpdf -o data_workflow.pdf
+dot data_workflow.dot -Tpng -o data_workflow.png && open data_workflow.png &
