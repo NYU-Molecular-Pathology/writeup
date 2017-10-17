@@ -17,7 +17,9 @@ Rsamtools
 GATK_DepthOfCoverage
 GATK_Realign
 GATK_Recalibrate
-CNV
+CNVkit
+Control_Freec
+CNV_compare
 LoFreq
 GATK_HaplotypeCaller
 GATK_MuTect2
@@ -154,8 +156,18 @@ GATK_MuTect2 [
     style=rounded, shape=box, color=Green
     ]
 
-CNV [
+CNVkit [
     label=<<FONT POINT-SIZE="18">CNVKit</FONT><BR />
+    <FONT POINT-SIZE="12">
+    copy number variant analysis<BR />
+    &#8226; input: .bam<BR />
+    &#8226; output: .txt, .pdf
+    </FONT>>,
+    style=rounded, shape=box, color=Green
+]
+
+Control_Freec [
+    label=<<FONT POINT-SIZE="18">Control-Freec</FONT><BR />
     <FONT POINT-SIZE="12">
     copy number variant analysis<BR />
     &#8226; input: .bam<BR />
@@ -185,6 +197,11 @@ QC [
     style=rounded, shape=box, color=Black
     ]
 
+CNV_compare [
+    label=<<FONT POINT-SIZE="14">Compare CNV analysis output</FONT>>,
+    style=rounded, shape=box, color=Black
+    ]
+
 Review [
     label=<<FONT POINT-SIZE="14">Clinical Review</FONT>>,
     style=rounded, shape=box, color=Purple
@@ -196,6 +213,9 @@ subgraph cluster1 {
     Trimmomatic -> BWA_MEM -> Sambamba
     Sambamba -> Rsamtools
     Sambamba -> GATK_DepthOfCoverage
+    Sambamba -> CNVkit
+    Sambamba -> Control_Freec
+
     }
 
 subgraph cluster2 {
@@ -206,13 +226,27 @@ subgraph cluster2 {
      GATK_Recalibrate -> GATK_MuTect2 -> ANNOVAR
     }
 
+subgraph cluster3 {
+    style="invis"
+    Reporting -> CNV_compare
+    Reporting -> QC
+    CNV_compare -> Review
+    Reporting -> Review
+    QC -> Review
+}
+
 splines="ortho"
 
 {rank=same Start Trimmomatic GATK_Realign}
 Start -> Trimmomatic
 
-Sambamba -> CNV
-CNV -> Reporting
+// Sambamba -> CNVkit
+// Sambamba -> Control_Freec
+
+CNVkit -> CNV_compare
+Control_Freec -> CNV_compare
+
+// CNV_compare -> Reporting
 
 Sambamba -> GATK_Realign //[constraint=false]
 ANNOVAR -> Reporting
@@ -221,8 +255,8 @@ Rsamtools -> Reporting
 GATK_DepthOfCoverage -> Reporting
 {rank=same QC Review}
 
-Reporting -> QC
-Reporting -> Review
-QC -> Review
+// Reporting -> QC
+// Reporting -> Review
+// QC -> Review
 
 }

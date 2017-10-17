@@ -27,8 +27,8 @@
 
 # use this command on local desktop
 dot pipline_workflow.dot -Tpdf -o pipline_workflow.pdf # && open pipline_workflow.pdf &
-dot pipline_workflow.dot -Tpng -o pipline_workflow.png
+dot pipline_workflow.dot -Tpng -o pipline_workflow.png && open pipline_workflow.png
 
 
 dot data_workflow.dot -Tpdf -o data_workflow.pdf
-dot data_workflow.dot -Tpng -o data_workflow.png && open data_workflow.png &
+dot data_workflow.dot -Tpng -o data_workflow.png # && open data_workflow.png &
